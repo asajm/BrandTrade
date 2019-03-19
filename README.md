@@ -6,7 +6,7 @@ The DApp User Interface when running should look like...
 
 ![truffle test](images/ftc_product_overview.png)
 
-![truffle test](images/ftc_farm_details.png)
+![truffle test](images/ftc_brand_details.png)
 
 ![truffle test](images/ftc_product_details.png)
 
