@@ -34,7 +34,7 @@ contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Own
         Collected,      // 3
         Sent,           // 4
         Received,       // 5
-        forPurchase,    // 6
+        ForPurchase,    // 6
         Purchased       // 7
     }
 
@@ -52,7 +52,6 @@ contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Own
         string  originBrandLongitude;   // Brand Longitude
         uint    productID;              // Product ID potentially a combination of upc + sku
         string  productNotes;           // Product Notes
-        uint    productPrice;           // Product Price
         State   itemState;              // Product State as represented in the enum above
         address distributorID;          // Metamask-Ethereum address of the Distributor
         address storeID;                // Metamask-Ethereum address of the Store
@@ -60,13 +59,13 @@ contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Own
     }
 
     // Define 8 events with the same 8 state values and accept 'upc' as input argument
-    event Harvested(uint upc);
-    event Processed(uint upc);
-    event Packed(uint upc);
+    event Produced(uint upc);
     event ForSale(uint upc);
     event Sold(uint upc);
-    event Shipped(uint upc);
+    event Collected(uint upc);
+    event Sent(uint upc);
     event Received(uint upc);
+    event ForPurchase(uint upc);
     event Purchased(uint upc);
 
     // Define a modifer that checks to see if msg.sender == owner of the contract
@@ -95,51 +94,51 @@ contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Own
         items[_upc].consumerID.transfer(amountToReturn);
     }
 
-    // Define a modifier that checks if an item.state of a upc is Harvested
-    modifier harvested(uint _upc) {
-        require(items[_upc].itemState == State.Harvested);
-        _;
-    }
-
-    // Define a modifier that checks if an item.state of a upc is Processed
-    modifier processed(uint _upc) {
-
-        _;
-    }
-
-    // Define a modifier that checks if an item.state of a upc is Packed
-    modifier packed(uint _upc) {
-
+    // Define a modifier that checks if an item.state of a upc is Produced
+    modifier produced(uint _upc) {
+        require(items[_upc].itemState == State.Produced);
         _;
     }
 
     // Define a modifier that checks if an item.state of a upc is ForSale
     modifier forSale(uint _upc) {
-
+        require(items[_upc].itemState == State.ForSale);
         _;
     }
 
     // Define a modifier that checks if an item.state of a upc is Sold
     modifier sold(uint _upc) {
-
+        require(items[_upc].itemState == State.Sold);
         _;
     }
 
-    // Define a modifier that checks if an item.state of a upc is Shipped
-    modifier shipped(uint _upc) {
+    // Define a modifier that checks if an item.state of a upc is Sent
+    modifier sent(uint _upc) {
+        require(items[_upc].itemState == State.Sent);
+        _;
+    }
 
+    // Define a modifier that checks if an item.state of a upc is Collected
+    modifier collected(uint _upc) {
+        require(items[_upc].itemState == State.Collected);
         _;
     }
 
     // Define a modifier that checks if an item.state of a upc is Received
     modifier received(uint _upc) {
+        require(items[_upc].itemState == State.Received);
+        _;
+    }
 
+    // Define a modifier that checks if an item.state of a upc is ForPurchase
+    modifier forPurchase(uint _upc) {
+        require(items[_upc].itemState == State.ForPurchase);
         _;
     }
 
     // Define a modifier that checks if an item.state of a upc is Purchased
     modifier purchased(uint _upc) {
-
+        require(items[_upc].itemState == State.Purchased);
         _;
     }
 
@@ -159,132 +158,119 @@ contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Own
         }
     }
 
-    // Define a function 'harvestItem' that allows a brand to mark an item 'Harvested'
-    function harvestItem(uint _upc, address _originBrandID, string _originBrandName, string _originBrandInformation, string    _originBrandLatitude, string   _originBrandLongitude, string  _productNotes) public
+    // Define a function 'produceItem' that allows a brand to mark an item 'Produced'
+    function produceItem(
+        uint    _upc,
+        string  _originBrandName,
+        string  _originBrandInformation,
+        string  _originBrandLatitude,
+        string  _originBrandLongitude,
+        string  _productNotes
+        )
+        public
     {
         // Add the new item as part of Harvest
+        uint _productID = sku + _upc;
+        Item memory item = Item(
+            sku,                        // sku
+            _upc,                       // upc
+            msg.sender,                 // ownerID
+            msg.sender,                 // originBrandID
+            _originBrandName,           // originBrandName
+            _originBrandInformation,    // originBrandInformation
+            _originBrandLatitude,       // originBrandLatitude
+            _originBrandLongitude,      // originBrandLongitude
+            _productID,                 // productID
+            _productNotes,              // productNotes
+            State.produced,             // itemState
+            address(0),                 // distributorID
+            address(0),                 // storeID
+            address(0)                  // consumerID
+        );
 
+        items[_upc] = item;
         // Increment sku
         sku = sku + 1;
         // Emit the appropriate event
-
+        emit produced(_upc);
     }
 
-    // Define a function 'processtItem' that allows a brand to mark an item 'Processed'
-    function processItem(uint _upc) public
-    // Call modifier to check if upc has passed previous supply chain stage
-
-    // Call modifier to verify caller of this function
-
+    // Define a function 'advertiseItem' that allows a brand to mark an item 'Collected'
+    function advertiseItem(uint _upc) public Produced(_upc) onlyBrand()
     {
         // Update the appropriate fields
-
+        items[_upc].itemState = State.ForSale;
         // Emit the appropriate event
-
+        emit forSale(_upc);
     }
 
-    // Define a function 'packItem' that allows a brand to mark an item 'Packed'
-    function packItem(uint _upc) public
-    // Call modifier to check if upc has passed previous supply chain stage
-
-    // Call modifier to verify caller of this function
-
+    // Define a function 'buyItem' that allows a distributor to mark an item 'sold'
+    function buyItem(uint _upc) public forSale(_upc) onlyDistributor()
     {
         // Update the appropriate fields
-
+        items[_upc].ownerID = msg.sender;
+        items[_upc].distributorID = msg.sender;
+        items[_upc].itemState = State.sold;
         // Emit the appropriate event
-
+        emit sold(_upc);
     }
 
-    // Define a function 'sellItem' that allows a brand to mark an item 'ForSale'
-    function sellItem(uint _upc, uint _price) public
-    // Call modifier to check if upc has passed previous supply chain stage
-
-    // Call modifier to verify caller of this function
-
+    // Define a function 'sellItem' that allows a distributor to mark an item 'collected'
+    function collectItem(uint _upc, uint _price) public sold(_upc) onlyDistributor()
     {
         // Update the appropriate fields
-
+        items[_upc].itemState = State.Collected;
         // Emit the appropriate event
-
+        emit collected(_upc);
     }
 
-    // Define a function 'buyItem' that allows the disributor to mark an item 'Sold'
-    // Use the above defined modifiers to check if the item is available for sale, if the buyer has paid enough,
-    // and any excess ether sent is refunded back to the buyer
-    function buyItem(uint _upc) public payable
-        // Call modifier to check if upc has passed previous supply chain stage
-
-        // Call modifer to check if buyer has paid enough
-
-        // Call modifer to send any excess ether back to buyer
-
-        {
-
+    // Define a function 'sendItem' that allows a distributor to mark an item 'sent'
+    function sendItem(uint _upc) public collected(_upc) onlyDistributor()
+    {
         // Update the appropriate fields - ownerID, distributorID, itemState
-
-        // Transfer money to brand
-
+        items[_upc].itemState = State.Sent;
         // emit the appropriate event
-
+        emit sent(_upc);
     }
 
-    // Define a function 'shipItem' that allows the distributor to mark an item 'Shipped'
-    // Use the above modifers to check if the item is sold
-    function shipItem(uint _upc) public
-        // Call modifier to check if upc has passed previous supply chain stage
-
-        // Call modifier to verify caller of this function
-
-        {
-        // Update the appropriate fields
-
-        // Emit the appropriate event
-
-    }
-
-    // Define a function 'receiveItem' that allows the store to mark an item 'Received'
-    // Use the above modifiers to check if the item is shipped
-    function receiveItem(uint _upc) public
-        // Call modifier to check if upc has passed previous supply chain stage
-
-        // Access Control List enforced by calling Smart Contract / DApp
-        {
+    // Define a function 'receiveItem' that allows a store to mark an item 'Received'
+    function receiveItem(uint _upc) public sent(_upc) onlyStore()
+    {
         // Update the appropriate fields - ownerID, storeID, itemState
-
+        items[_upc].ownerID = msg.sender;
+        items[_upc].storeID = msg.sender;
+        items[_upc].itemState = State.Received;
         // Emit the appropriate event
-
+        emit received(_upc);
     }
 
-    // Define a function 'purchaseItem' that allows the consumer to mark an item 'Purchased'
-    // Use the above modifiers to check if the item is received
-    function purchaseItem(uint _upc) public
-        // Call modifier to check if upc has passed previous supply chain stage
-
-        // Access Control List enforced by calling Smart Contract / DApp
-        {
-        // Update the appropriate fields - ownerID, consumerID, itemState
-
+    // Define a function 'storeItem' that allows a store to mark an item 'ForPurchase'
+    function storeItem(uint _upc) public received(_upc) onlyStore()
+    {
+        // Update the appropriate fields
+        items[_upc].itemState = State.ForPurchase;
         // Emit the appropriate event
+        emit forPurchase(_upc);
+    }
 
+    // Define a function 'purchaseItem' that allows a consumer to mark an item 'Purchased'
+    // Use the above modifiers to check if the item is received
+    function purchaseItem(uint _upc) public forPurchase(_upc) onlyConsumer()
+    {
+        // Update the appropriate fields - ownerID, consumerID, itemState
+        items[_upc].ownerID = msg.sender;
+        items[_upc].consumerID = msg.sender;
+        items[_upc].itemState = State.Purchased;
+        // Emit the appropriate event
+        emit purchased(_upc);
     }
 
     // Define a function 'fetchItemBufferOne' that fetches the data
-    function fetchItemBufferOne(uint _upc) public view returns
-    (
-    uint    itemSKU,
-    uint    itemUPC,
-    address ownerID,
-    address originBrandID,
-    string  originBrandName,
-    string  originBrandInformation,
-    string  originBrandLatitude,
-    string  originBrandLongitude
-    )
+    function fetchItemBufferOne(uint _upc) public view
+        returns( uint itemSKU, uint itemUPC, address ownerID, address originBrandID, string originBrandName,
+                string originBrandInformation, string originBrandLatitude, string originBrandLongitude )
     {
         // Assign values to the 8 parameters
-
-
         return
         (
         itemSKU,
