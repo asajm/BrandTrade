@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 import "../brandAccessControl/BrandRole.sol";
 import "../brandAccessControl/DistributorRole.sol";
@@ -7,10 +7,10 @@ import "../brandAccessControl/ConsumerRole.sol";
 import "../brandCore/Ownable.sol";
 
 // Define a contract 'Supplychain'
-contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Ownable {
+contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole {
 
     // Define 'owner'
-    address owner;
+    address payable owner;
 
     // Define a variable called 'upc' for Universal Product Code (UPC)
     uint    upc;
@@ -81,18 +81,18 @@ contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Own
     }
 
     // Define a modifier that checks if the paid amount is sufficient to cover the price
-    modifier paidEnough(uint _price) {
-        require(msg.value >= _price);
-        _;
-    }
+    // modifier paidEnough(uint _price) {
+    //     require(msg.value >= _price);
+    //     _;
+    // }
 
     // Define a modifier that checks the price and refunds the remaining balance
-    modifier checkValue(uint _upc) {
-        _;
-        uint _price = items[_upc].productPrice;
-        uint amountToReturn = msg.value - _price;
-        items[_upc].consumerID.transfer(amountToReturn);
-    }
+    // modifier checkValue(uint _upc) {
+    //     _;
+    //     uint _price = items[_upc].productPrice;
+    //     uint amountToReturn = msg.value - _price;
+    //     items[_upc].consumerID.transfer(amountToReturn);
+    // }
 
     // Define a modifier that checks if an item.state of a upc is Produced
     modifier produced(uint _upc) {
@@ -161,28 +161,29 @@ contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Own
     // Define a function 'produceItem' that allows a brand to mark an item 'Produced'
     function produceItem(
         uint    _upc,
-        string  _originBrandName,
-        string  _originBrandInformation,
-        string  _originBrandLatitude,
-        string  _originBrandLongitude,
-        string  _productNotes
+        address _originBrandID,
+        string memory  _originBrandName,
+        string memory  _originBrandInformation,
+        string memory  _originBrandLatitude,
+        string memory  _originBrandLongitude,
+        string memory  _productNotes
         )
         public
     {
-        // Add the new item as part of Harvest
+        // Add the new item as part of Produce
         uint _productID = sku + _upc;
         Item memory item = Item(
             sku,                        // sku
             _upc,                       // upc
-            msg.sender,                 // ownerID
-            msg.sender,                 // originBrandID
+            _originBrandID,             // ownerID
+            _originBrandID,             // originBrandID
             _originBrandName,           // originBrandName
             _originBrandInformation,    // originBrandInformation
             _originBrandLatitude,       // originBrandLatitude
             _originBrandLongitude,      // originBrandLongitude
             _productID,                 // productID
             _productNotes,              // productNotes
-            State.produced,             // itemState
+            State.Produced,             // itemState
             address(0),                 // distributorID
             address(0),                 // storeID
             address(0)                  // consumerID
@@ -192,16 +193,16 @@ contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Own
         // Increment sku
         sku = sku + 1;
         // Emit the appropriate event
-        emit produced(_upc);
+        emit Produced(_upc);
     }
 
     // Define a function 'advertiseItem' that allows a brand to mark an item 'Collected'
-    function advertiseItem(uint _upc) public Produced(_upc) onlyBrand()
+    function advertiseItem(uint _upc) public produced(_upc) onlyBrand()
     {
         // Update the appropriate fields
         items[_upc].itemState = State.ForSale;
         // Emit the appropriate event
-        emit forSale(_upc);
+        emit ForSale(_upc);
     }
 
     // Define a function 'buyItem' that allows a distributor to mark an item 'sold'
@@ -210,18 +211,18 @@ contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Own
         // Update the appropriate fields
         items[_upc].ownerID = msg.sender;
         items[_upc].distributorID = msg.sender;
-        items[_upc].itemState = State.sold;
+        items[_upc].itemState = State.Sold;
         // Emit the appropriate event
-        emit sold(_upc);
+        emit Sold(_upc);
     }
 
     // Define a function 'sellItem' that allows a distributor to mark an item 'collected'
-    function collectItem(uint _upc, uint _price) public sold(_upc) onlyDistributor()
+    function collectItem(uint _upc) public sold(_upc) onlyDistributor()
     {
         // Update the appropriate fields
         items[_upc].itemState = State.Collected;
         // Emit the appropriate event
-        emit collected(_upc);
+        emit Collected(_upc);
     }
 
     // Define a function 'sendItem' that allows a distributor to mark an item 'sent'
@@ -230,7 +231,7 @@ contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Own
         // Update the appropriate fields - ownerID, distributorID, itemState
         items[_upc].itemState = State.Sent;
         // emit the appropriate event
-        emit sent(_upc);
+        emit Sent(_upc);
     }
 
     // Define a function 'receiveItem' that allows a store to mark an item 'Received'
@@ -241,7 +242,7 @@ contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Own
         items[_upc].storeID = msg.sender;
         items[_upc].itemState = State.Received;
         // Emit the appropriate event
-        emit received(_upc);
+        emit Received(_upc);
     }
 
     // Define a function 'storeItem' that allows a store to mark an item 'ForPurchase'
@@ -250,7 +251,7 @@ contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Own
         // Update the appropriate fields
         items[_upc].itemState = State.ForPurchase;
         // Emit the appropriate event
-        emit forPurchase(_upc);
+        emit ForPurchase(_upc);
     }
 
     // Define a function 'purchaseItem' that allows a consumer to mark an item 'Purchased'
@@ -262,56 +263,63 @@ contract SupplyChain is BrandRole, DistributorRole, StoreRole, ConsumerRole, Own
         items[_upc].consumerID = msg.sender;
         items[_upc].itemState = State.Purchased;
         // Emit the appropriate event
-        emit purchased(_upc);
+        emit Purchased(_upc);
     }
 
     // Define a function 'fetchItemBufferOne' that fetches the data
     function fetchItemBufferOne(uint _upc) public view
-        returns( uint itemSKU, uint itemUPC, address ownerID, address originBrandID, string originBrandName,
-                string originBrandInformation, string originBrandLatitude, string originBrandLongitude )
+        returns(
+            uint itemSKU,
+            uint itemUPC,
+            address ownerID,
+            address originBrandID,
+            string memory originBrandName,
+            string memory originBrandInformation,
+            string memory originBrandLatitude,
+            string memory originBrandLongitude
+        )
     {
         // Assign values to the 8 parameters
-        return
-        (
-        itemSKU,
-        itemUPC,
-        ownerID,
-        originBrandID,
-        originBrandName,
-        originBrandInformation,
-        originBrandLatitude,
-        originBrandLongitude
-        );
+        Item memory item = items[_upc];
+
+        itemSKU = item.sku;
+        itemUPC = item.upc;
+        ownerID = item.ownerID;
+        originBrandID = item.originBrandID;
+        originBrandName = item.originBrandName;
+        originBrandInformation = item.originBrandInformation;
+        originBrandLatitude = item.originBrandLatitude;
+        originBrandLongitude = item.originBrandLongitude;
+
+        return ( itemSKU, itemUPC, ownerID, originBrandID, originBrandName, originBrandInformation,
+                originBrandLatitude, originBrandLongitude );
     }
 
     // Define a function 'fetchItemBufferTwo' that fetches the data
-    function fetchItemBufferTwo(uint _upc) public view returns
-    (
-    uint    itemSKU,
-    uint    itemUPC,
-    uint    productID,
-    string  productNotes,
-    uint    productPrice,
-    uint    itemState,
-    address distributorID,
-    address storeID,
-    address consumerID
-    )
+    function fetchItemBufferTwo(uint _upc) public view
+        returns(
+            uint    itemSKU,
+            uint    itemUPC,
+            uint    productID,
+            string memory  productNotes,
+            uint    itemState,
+            address distributorID,
+            address storeID,
+            address consumerID
+        )
     {
-        // Assign values to the 9 parameters
+        // Assign values to the 8 parameters
+        Item memory item = items[_upc];
 
+        itemSKU = item.sku;
+        itemUPC = item.upc;
+        productID = item.productID;
+        productNotes = item.productNotes;
+        itemState = uint(item.itemState);
+        distributorID = item.distributorID;
+        storeID = item.storeID;
+        consumerID = item.consumerID;
 
-        return
-        (
-        itemSKU,
-        itemUPC,
-        productID,
-        productNotes,
-        productPrice,
-        itemState,
-        distributorID,
-        storeID,
-        consumerID
-        );
+        return ( itemSKU, itemUPC, productID, productNotes, itemState, distributorID, storeID, consumerID );
     }
 }
