@@ -1,3 +1,4 @@
-brandSupplyChain
-images
+brandSupplyChain/.*
+brandSupplyChain/node_modules
+brandSupplyChain/build
 0_ganache-cli.txt

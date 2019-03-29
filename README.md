@@ -1,6 +1,12 @@
-# Supply chain & data auditing
+# Brand Supply Chain
+This repository containts an Ethereum DApp that demonstrates a Supply Chain flow between a Brand and Buyer. The user story is similar to any commonly used supply chain process. A Brand can add items to the inventory system stored in the blockchain. A Buyer can purchase such items from the inventory system. Additionally a Seller can mark an item as Shipped, and similarly a Buyer can mark an item as Received.
 
-This repository containts an Ethereum DApp that demonstrates a Supply Chain flow between a Seller and Buyer. The user story is similar to any commonly used supply chain process. A Seller can add items to the inventory system stored in the blockchain. A Buyer can purchase such items from the inventory system. Additionally a Seller can mark an item as Shipped, and similarly a Buyer can mark an item as Received.
+* **Contract ID:** 0xD8515C71172CbBdD23aA9B59517B0018a05Ffd90
+* **Transaction ID:** 0x319b5ed90f9af4907bcd0deb8ab0333c6db2c989969c8f5afb412030fd1a8802
+* **node version number:** 10.15.1
+* **Truffle version number:** 5.0.5
+
+<!-- This repository containts an Ethereum DApp that demonstrates a Supply Chain flow between a Seller and Buyer. The user story is similar to any commonly used supply chain process. A Seller can add items to the inventory system stored in the blockchain. A Buyer can purchase such items from the inventory system. Additionally a Seller can mark an item as Shipped, and similarly a Buyer can mark an item as Received.
 
 The DApp User Interface when running should look like...
 
@@ -107,4 +113,4 @@ See also the list of [contributors](https://github.com/your/project/contributors
 * Solidity
 * Ganache-cli
 * Truffle
-* IPFS
+* IPFS -->

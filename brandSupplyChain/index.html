@@ -4,19 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fair Trade Coffee</title>
+    <title>Transparency Trade of Brands</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
     <div class="container">
-        <h1 style="text-align: center;">Fair Trade Coffee</h1>
+        <h1 style="text-align: center;">Transparency Trade of Brands</h1>
         <hr>
-        <p style="text-align: center;">Prove the authenticity of coffee using the Ethereum blockchain.</p>
+        <p style="text-align: center;">Prove the authenticity of brands using the Ethereum blockchain.</p>
     </div>
 
-    <div id="ftc-harvest">
+    <div id="ftc-brand">
         <h2>Product Overview</h2>
         <div class="form-group">
             SKU
@@ -27,7 +27,7 @@
             <input type="number" id="upc" name="upc" value=1><br>
             Current Owner ID
             <br>
-            <input type="text" id="ownerID" name="ownerID" value="0x963865f57804b38459dd4b2da2f760211a200438" size="50"><br>
+            <input type="text" id="ownerID" name="ownerID" value="0x16522d8E32CEAD155a2A7099B401e7fc1D9D39e5" size="50"><br>
             <div class=button-div>
                 <button class="btn-fetchOne" id="button" type="button" data-id="9">Fetch Data 1</button>
                 <button class="btn-fetchTwo" id="button" type="button" data-id="10">Fetch Data 2</button>
@@ -42,31 +42,20 @@
                 size="50"><br>
             Brand Name
             <br>
-            <input type="text" id="originBrandName" name="originBrandName" value="John Doe"><br>
+            <input type="text" id="originBrandName" name="originBrandName" value="YSL"><br>
             Brand Information
             <br>
-            <input type="text" id="originBrandInformation" name="originBrandInformation" value="Yarra Valley"><br>
+            <input type="text" id="originBrandInformation" name="originBrandInformation" value="Yves Saint Laurent"><br>
             Brand Latitude
             <br>
-            <input type="text" id="originBrandLatitude" name="originBrandLatitude" value="-38.239770"><br>
+            <input type="text" id="originBrandLatitude" name="originBrandLatitude" value="48.858372"><br>
             Brand Longitude
             <br>
-            <input type="text" id="originBrandLongitude" name="originBrandLongitude" value="144.341490"><br>
+            <input type="text" id="originBrandLongitude" name="originBrandLongitude" value="2.294481"><br>
             <br>
-            <button class="btn-harvest" id="button" type="button" data-id="1">Produce</button>
-            <button class="btn-process" id="button" type="button" data-id="2">Process</button>
-            <button class="btn-pack" id="button" type="button" data-id="3">Pack</button>
-            <button class="btn-forsale" id="button" type="button" data-id="4">ForSale</button>
-        </div>
-        <div class=form-break></div>
-        <h2>Product Details</h2>
-        <div class="form-group">
             Product Notes
             <br>
-            <input type="text" id="productNotes" name="productNotes" value="Best beans for Espresso" size="60"><br>
-            Product Price
-            <br>
-            <input type="number" id="productPrice" name="productPrice" value=1>ETH<br>
+            <input type="text" id="productNotes" name="productNotes" value="LHOMME EAU DE TOILETTE SPRAY" size="60"><br>
             Distributor ID
             <br>
             <input type="text" id="distributorID" name="distributorID" value="0xf1b1bcd24dad92303dd9fe78be639f7bcf9c238d"
@@ -81,13 +70,16 @@
             <input type="text" id="consumerID" name="consumerID" value="0x5d777e9127b28fb119e81a6304278a0a21bef1c4"
                 size="50"><br>
             <br>
-            <button class="btn-buy" id="button" type="button" data-id="5">Buy</button>
-            <button class="btn-ship" id="button" type="button" data-id="6">Ship</button>
-            <button class="btn-receive" id="button" type="button" data-id="7">Receive</button>
+            <button class="btn-produce" id="button" type="button" data-id="1">Produce</button>
+            <button class="btn-advertise" id="button" type="button" data-id="2">Advertise</button>
+            <button class="btn-buy" id="button" type="button" data-id="3">Buy</button>
+            <button class="btn-collect" id="button" type="button" data-id="4">Collect</button>
+            <button class="btn-send" id="button" type="button" data-id="5">Send</button>
+            <button class="btn-receive" id="button" type="button" data-id="6">Receive</button>
+            <button class="btn-store" id="button" type="button" data-id="7">Store</button>
             <button class="btn-purchase" id="button" type="button" data-id="8">Purchase</button>
         </div>
         <div class=form-break></div>
-        <hr>
     </div>
 
     <h2>Transaction History<span id="ftc-history"></span></h2>

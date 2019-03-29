@@ -54,13 +54,9 @@ contract('SupplyChain', function(accounts) {
         await supplyChain.addConsumer(consumerID)
 
         assert.equal(await supplyChain.isBrand(brandID), true, 'Error: the brand was not added properly')
-        assert.equal(await supplyChain.isBrand(brandID_2), false, 'Error: Invalid brand')
         assert.equal(await supplyChain.isDistributor(distributorID), true, 'Error: the distributor was not added properly')
-        assert.equal(await supplyChain.isDistributor(distributorID_2), false, 'Error: Invalid distributor')
         assert.equal(await supplyChain.isStore(storeID), true, 'Error: the store was not added properly')
-        assert.equal(await supplyChain.isStore(storeID_2), false, 'Error: Invalid store')
         assert.equal(await supplyChain.isConsumer(consumerID), true, 'Error: the consumer was not added properly')
-        assert.equal(await supplyChain.isConsumer(consumerID_2), false, 'Error: Invalid consumer')
     })
 
     // 1st Test
